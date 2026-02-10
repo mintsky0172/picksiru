@@ -1,14 +1,14 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
-const NotFound = () => {
+const BinaryPick = () => {
   return (
     <View>
-      <Text>NotFound</Text>
+      <Text>BinaryPick</Text>
     </View>
   )
 }
 
-export default NotFound
+export default BinaryPick
 
 const styles = StyleSheet.create({})

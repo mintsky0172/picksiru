@@ -1,14 +1,14 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
-const NotFound = () => {
+const NumberPick = () => {
   return (
     <View>
-      <Text>NotFound</Text>
+      <Text>NumberPick</Text>
     </View>
   )
 }
 
-export default NotFound
+export default NumberPick
 
 const styles = StyleSheet.create({})

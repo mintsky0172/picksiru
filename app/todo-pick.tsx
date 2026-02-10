@@ -1,14 +1,14 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 
-const NotFound = () => {
+const TodoPick = () => {
   return (
     <View>
-      <Text>NotFound</Text>
+      <Text>todo-pick</Text>
     </View>
   )
 }
 
-export default NotFound
+export default TodoPick
 
 const styles = StyleSheet.create({})
