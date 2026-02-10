@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, Image } from "react-native";
 import React from "react";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import Screen from "../../components/ui/Screen";
 import ListItem from "@/components/ui/ListItem";
 import PrimaryButton from "@/components/ui/PrimaryButton";
@@ -16,12 +16,10 @@ const ManageTasksScreen = () => {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const logo = require("../../assets/images/labels/managelogo.png");
+  const { groupId } = useLocalSearchParams<{ groupId: string }>();
   return (
     <Screen
-      style={[
-        styles.container,
-        { paddingTop: Math.max(0, 60 - insets.top) },
-      ]}
+      style={[styles.container, { paddingTop: Math.max(0, 60 - insets.top) }]}
     >
       <View style={styles.header}>
         <Image source={logo} style={styles.title} />
@@ -47,13 +45,15 @@ const ManageTasksScreen = () => {
       <View style={styles.bottom}>
         <PrimaryButton
           label="할일 추가"
-          onPress={() => {}}
+          onPress={() =>
+            router.push({
+              pathname: "/(modal)/add-task",
+              params: { groupId },
+            })
+          }
           style={{ marginBottom: 12, marginTop: 4 }}
         />
-        <SecondaryButton
-          label="이전 화면으로"
-          onPress={() => router.back()}
-        />
+        <SecondaryButton label="이전 화면으로" onPress={() => router.back()} />
       </View>
     </Screen>
   );

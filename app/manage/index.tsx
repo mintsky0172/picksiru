@@ -18,10 +18,7 @@ const ManageGroupScreen = () => {
   const logo = require("../../assets/images/labels/managelogo.png");
   return (
     <Screen
-      style={[
-        styles.container,
-        { paddingTop: Math.max(0, 60 - insets.top) },
-      ]}
+      style={[styles.container, { paddingTop: Math.max(0, 60 - insets.top) }]}
     >
       <View style={styles.header}>
         <Image source={logo} style={styles.title} />
@@ -47,7 +44,7 @@ const ManageGroupScreen = () => {
       <View style={styles.bottom}>
         <PrimaryButton
           label="그룹 추가"
-          onPress={() => {}}
+          onPress={() => router.push("/(modal)/add-group")}
           style={{ marginBottom: 12, marginTop: 4 }}
         />
         <SecondaryButton
