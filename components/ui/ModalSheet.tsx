@@ -58,8 +58,7 @@ const styles = StyleSheet.create({
   },
   sheet: {
     backgroundColor: Colors.surface,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    borderRadius: 24,
     paddingHorizontal: Spacing.screenHorizontal,
     paddingTop: 18,
     paddingBottom: 24,

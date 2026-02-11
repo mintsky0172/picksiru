@@ -34,11 +34,17 @@ export default function Layout() {
       {/* 모달 그룹 */}
       <Stack.Screen
         name="(modal)/add-group"
-        options={{ presentation: 'modal' }}
+        options={{
+          presentation: "transparentModal",
+          contentStyle: { backgroundColor: "transparent" },
+        }}
       />
       <Stack.Screen
         name="(modal)/add-task"
-        options={{ presentation: 'modal' }}
+        options={{
+          presentation: "transparentModal",
+          contentStyle: { backgroundColor: "transparent" },
+        }}
       />
 
     </Stack>

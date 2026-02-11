@@ -9,11 +9,12 @@ import { Colors } from "@/constants/colors";
 import { Spacing } from "@/constants/spacing";
 import { Typography } from "@/constants/typography";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
-const MOCK_GROUPS = ["그룹 1", "그룹 2", "그룹 3", "그룹 4", "그룹 5"];
+import { usePickStore } from "@/store/usePickStore";
 
 const ManageGroupScreen = () => {
   const router = useRouter();
+  const groups = usePickStore((s) => s.groups);
+  const deleteGroup = usePickStore((s) => s.deleteGroup);
   const insets = useSafeAreaInsets();
   const logo = require("../../assets/images/labels/managelogo.png");
   return (
@@ -26,19 +27,31 @@ const ManageGroupScreen = () => {
       </View>
 
       <View style={styles.list}>
-        {MOCK_GROUPS.map((g) => (
-          <View key={g} style={styles.itemWrap}>
-            <ListItem
-              title={g}
-              onPress={() =>
-                router.push({
-                  pathname: "/manage/[groupId]",
-                  params: { groupId: g },
-                })
-              }
-            />
-          </View>
-        ))}
+        {groups.length === 0 ? (
+          <Text
+            style={{
+              color: Colors.textSecondary, ...Typography.body,
+              textAlign: "center",
+              marginTop: 16,
+            }}
+          >
+            아직 그룹이 없어. '그룹 추가'로 시작해 보자!
+          </Text>
+        ) : (
+          groups.map((g) => (
+            <View key={g.id} style={styles.itemWrap}>
+              <ListItem
+                title={g.name}
+                onPress={() =>
+                  router.push({
+                    pathname: "/manage/[groupId]",
+                    params: { groupId: g.id },
+                  })
+                }
+              />
+            </View>
+          ))
+        )}
       </View>
 
       <View style={styles.bottom}>

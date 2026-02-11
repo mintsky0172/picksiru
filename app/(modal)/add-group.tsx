@@ -6,12 +6,15 @@ import TextField from "@/components/ui/TextField";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import { Colors } from "@/constants/colors";
 import { Typography } from "@/constants/typography";
+import { usePickStore } from "@/store/usePickStore";
 
 const AddGroupModal = () => {
   const router = useRouter();
   const [name, setName] = useState("");
 
   const close = () => router.back();
+
+  const addGroup = usePickStore((s) => s.addGroup);
 
   return (
     <ModalSheet title="그룹 추가" onClose={close}>
@@ -26,7 +29,7 @@ const AddGroupModal = () => {
         <PrimaryButton
           label="추가"
           onPress={() => {
-            // TODO: store 연결해서 추가할 예정
+            addGroup(name);
             close();
           }}
           disabled={name.trim().length === 0}

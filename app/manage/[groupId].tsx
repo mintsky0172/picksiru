@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Image } from "react-native";
-import React from "react";
+import React, { useMemo } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import Screen from "../../components/ui/Screen";
 import ListItem from "@/components/ui/ListItem";
@@ -9,14 +9,28 @@ import { Colors } from "@/constants/colors";
 import { Spacing } from "@/constants/spacing";
 import { Typography } from "@/constants/typography";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
-const MOCK_TASKS = ["할일 1", "할일 2", "할일 3", "할일 4", "할일 5"];
+import { usePickStore } from "@/store/usePickStore";
 
 const ManageTasksScreen = () => {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const logo = require("../../assets/images/labels/managelogo.png");
-  const { groupId } = useLocalSearchParams<{ groupId: string }>();
+  const { groupId } = useLocalSearchParams<{ groupId: string | string[] }>();
+  const currentGroupId = Array.isArray(groupId) ? groupId[0] : groupId;
+
+  const group = usePickStore((s) =>
+    s.groups.find((g) => g.id === currentGroupId),
+  );
+  const allTasks = usePickStore((s) => s.tasks);
+  const tasks = useMemo(
+    () =>
+      allTasks
+        .filter((t) => t.groupId === currentGroupId)
+        .sort((a, b) => a.createdAt - b.createdAt),
+    [allTasks, currentGroupId],
+  );
+  const deleteTask = usePickStore((s) => s.deleteTask);
+
   return (
     <Screen
       style={[styles.container, { paddingTop: Math.max(0, 60 - insets.top) }]}
@@ -27,19 +41,29 @@ const ManageTasksScreen = () => {
       </View>
 
       <View style={styles.list}>
-        {MOCK_TASKS.map((g) => (
-          <View key={g} style={styles.itemWrap}>
-            <ListItem
-              title={g}
-              onPress={() =>
-                router.push({
-                  pathname: "/manage/[groupId]",
-                  params: { groupId: g },
-                })
-              }
-            />
-          </View>
-        ))}
+        {tasks.length === 0 ? (
+          <Text
+            style={{
+              color: Colors.textSecondary,
+              ...Typography.body,
+              textAlign: "center",
+              marginTop: 16,
+            }}
+          >
+            아직 할일이 없어. '할일 추가'로 넣어보자!
+          </Text>
+        ) : (
+          tasks.map((t) => (
+            <View key={t.id} style={styles.itemWrap}>
+              <ListItem
+                title={t.name}
+                onPress={() => {
+                  /* Todo: 수정기능 추가 */
+                }}
+              />
+            </View>
+          ))
+        )}
       </View>
 
       <View style={styles.bottom}>
@@ -48,7 +72,7 @@ const ManageTasksScreen = () => {
           onPress={() =>
             router.push({
               pathname: "/(modal)/add-task",
-              params: { groupId },
+              params: { groupId: currentGroupId },
             })
           }
           style={{ marginBottom: 12, marginTop: 4 }}

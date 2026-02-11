@@ -6,6 +6,7 @@ import TextField from "@/components/ui/TextField";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import { Colors } from "@/constants/colors";
 import { Typography } from "@/constants/typography";
+import { usePickStore } from "@/store/usePickStore";
 
 const AddTaskModal = () => {
   const router = useRouter();
@@ -14,11 +15,16 @@ const AddTaskModal = () => {
 
   const close = () => router.back();
 
+  const addTask = usePickStore((s) => s.addTask);
+  const groupName = usePickStore(
+    (s) => s.groups.find((g) => g.id === groupId)?.name ?? "알 수 없음",
+  );
+
   return (
     <ModalSheet title="할일 추가" onClose={close}>
       <View style={styles.body}>
         <Text style={styles.label}>
-          대상 그룹: <Text style={styles.bold}>{groupId ?? "알 수 없음"}</Text>
+          대상 그룹: <Text style={styles.bold}>{groupName}</Text>
         </Text>
         <TextField
           value={name}
@@ -29,7 +35,8 @@ const AddTaskModal = () => {
         <PrimaryButton
           label="추가"
           onPress={() => {
-            // TODO: store 연결해서 추가할 예정
+            if(!groupId) return;
+            addTask(groupId, name);
             close();
           }}
           disabled={name.trim().length === 0}
