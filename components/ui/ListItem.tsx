@@ -8,9 +8,10 @@ type Props = {
   title: string;
   rightText?: string;
   onPress?: () => void;
+  onDelete?: () => void;
 };
 
-const ListItem = ({ title, onPress }: Props) => {
+const ListItem = ({ title, onPress, onDelete }: Props) => {
   return (
     <Pressable
       onPress={onPress}
@@ -19,7 +20,11 @@ const ListItem = ({ title, onPress }: Props) => {
       <Text style={styles.title}>{title}</Text>
       <View style={styles.right}>
         <Text style={styles.edit}>✏️</Text>
-        <Text style={styles.delete}>❌</Text>
+        {onDelete && (
+          <Pressable onPress={onDelete} style={styles.deleteButton}>
+            <Text style={styles.deleteText}>❌</Text>
+          </Pressable>
+        )}
       </View>
     </Pressable>
   );
@@ -48,8 +53,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   right: {
-    display: 'flex',
-    flexDirection: 'row',
+    display: "flex",
+    flexDirection: "row",
     position: "absolute",
     right: Spacing.md,
     top: 0,
@@ -57,12 +62,16 @@ const styles = StyleSheet.create({
     width: 32,
     justifyContent: "center",
     alignItems: "center",
-    gap: Spacing.sm
+    gap: Spacing.sm,
   },
   edit: {
     fontSize: 14,
   },
-  delete: {
+  deleteButton: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  deleteText: {
     fontSize: 14,
-  }
+  },
 });

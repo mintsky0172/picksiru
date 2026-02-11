@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image } from "react-native";
+import { StyleSheet, Text, View, Image, Alert } from "react-native";
 import React, { useMemo } from "react";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import Screen from "../../components/ui/Screen";
@@ -60,6 +60,16 @@ const ManageTasksScreen = () => {
                 onPress={() => {
                   /* Todo: 수정기능 추가 */
                 }}
+                onDelete={() =>
+                  Alert.alert("할일 삭제", "이 할일을 삭제할까?", [
+                    { text: "취소", style: "cancel" },
+                    {
+                      text: "삭제",
+                      style: "destructive",
+                      onPress: () => deleteTask(t.id),
+                    },
+                  ])
+                }
               />
             </View>
           ))

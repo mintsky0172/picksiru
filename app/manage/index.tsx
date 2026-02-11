@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image } from "react-native";
+import { StyleSheet, Text, View, Image, Alert } from "react-native";
 import React from "react";
 import { useRouter } from "expo-router";
 import Screen from "../../components/ui/Screen";
@@ -47,6 +47,16 @@ const ManageGroupScreen = () => {
                     pathname: "/manage/[groupId]",
                     params: { groupId: g.id },
                   })
+                }
+                onDelete={() =>
+                    Alert.alert(
+                        '그룹 삭제',
+                        '이 그룹과 모든 할일을 삭제할까?',
+                        [
+                            { text: '취소', style: 'cancel' },
+                            { text: '삭제', style: 'destructive', onPress: () => deleteGroup(g.id)},
+                        ]
+                    )
                 }
               />
             </View>
