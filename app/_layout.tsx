@@ -46,6 +46,21 @@ export default function Layout() {
           contentStyle: { backgroundColor: "transparent" },
         }}
       />
+      <Stack.Screen
+        name="(modal)/edit-group"
+        options={{
+          presentation: "transparentModal",
+          contentStyle: { backgroundColor: "transparent" },
+        }}
+      />
+      <Stack.Screen
+        name="(modal)/edit-task"
+        options={{
+          presentation: "transparentModal",
+          contentStyle: { backgroundColor: "transparent" },
+        }}
+      />
+    
 
     </Stack>
   );

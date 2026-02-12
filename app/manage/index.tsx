@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image, Alert } from "react-native";
+import { StyleSheet, Text, View, Image, Alert, Pressable } from "react-native";
 import React from "react";
 import { useRouter } from "expo-router";
 import Screen from "../../components/ui/Screen";
@@ -15,8 +15,11 @@ const ManageGroupScreen = () => {
   const router = useRouter();
   const groups = usePickStore((s) => s.groups);
   const deleteGroup = usePickStore((s) => s.deleteGroup);
+  const resetAll = usePickStore((s) => s.resetAll);
+
   const insets = useSafeAreaInsets();
   const logo = require("../../assets/images/labels/managelogo.png");
+
   return (
     <Screen
       style={[styles.container, { paddingTop: Math.max(0, 60 - insets.top) }]}
@@ -30,7 +33,8 @@ const ManageGroupScreen = () => {
         {groups.length === 0 ? (
           <Text
             style={{
-              color: Colors.textSecondary, ...Typography.body,
+              color: Colors.textSecondary,
+              ...Typography.body,
               textAlign: "center",
               marginTop: 16,
             }}
@@ -48,15 +52,21 @@ const ManageGroupScreen = () => {
                     params: { groupId: g.id },
                   })
                 }
+                onEdit={() =>
+                  router.push({
+                    pathname: "/edit-group",
+                    params: { groupId: g.id },
+                  })
+                }
                 onDelete={() =>
-                    Alert.alert(
-                        '그룹 삭제',
-                        '이 그룹과 모든 할일을 삭제할까?',
-                        [
-                            { text: '취소', style: 'cancel' },
-                            { text: '삭제', style: 'destructive', onPress: () => deleteGroup(g.id)},
-                        ]
-                    )
+                  Alert.alert("그룹 삭제", "이 그룹과 모든 할일을 삭제할까?", [
+                    { text: "취소", style: "cancel" },
+                    {
+                      text: "삭제",
+                      style: "destructive",
+                      onPress: () => deleteGroup(g.id),
+                    },
+                  ])
                 }
               />
             </View>
@@ -67,13 +77,41 @@ const ManageGroupScreen = () => {
       <View style={styles.bottom}>
         <PrimaryButton
           label="그룹 추가"
-          onPress={() => router.push("/(modal)/add-group")}
+          onPress={() => router.push("/add-group")}
           style={{ marginBottom: 12, marginTop: 4 }}
         />
         <SecondaryButton
           label="메인 화면으로"
           onPress={() => router.push("/")}
         />
+        <Pressable
+          onPress={() => {
+            Alert.alert(
+              "전체 초기화",
+              "모든 그룹과 할일을 삭제할까?\n(이 작업은 되돌릴 수 없어)",
+              [
+                { text: "취소", style: "cancel" },
+                {
+                  text: "삭제",
+                  style: "destructive",
+                  onPress: () => resetAll(),
+                },
+              ],
+            );
+          }}
+          style={{ marginTop: 28, alignItems: "center" }}
+        >
+          <Text
+            style={{
+              color: Colors.textSecondary, ...Typography.body,
+              fontSize: 12,
+              textDecorationLine: "underline",
+              alignSelf: "flex-end",
+            }}
+          >
+            ⚠️ 전체 초기화
+          </Text>
+        </Pressable>
       </View>
     </Screen>
   );

@@ -57,9 +57,12 @@ const ManageTasksScreen = () => {
             <View key={t.id} style={styles.itemWrap}>
               <ListItem
                 title={t.name}
-                onPress={() => {
-                  /* Todo: 수정기능 추가 */
-                }}
+                onEdit={() =>
+                  router.push({
+                    pathname: "/edit-task",
+                    params: { taskId: t.id },
+                  })
+                }
                 onDelete={() =>
                   Alert.alert("할일 삭제", "이 할일을 삭제할까?", [
                     { text: "취소", style: "cancel" },
@@ -81,7 +84,7 @@ const ManageTasksScreen = () => {
           label="할일 추가"
           onPress={() =>
             router.push({
-              pathname: "/(modal)/add-task",
+              pathname: "/add-task",
               params: { groupId: currentGroupId },
             })
           }
