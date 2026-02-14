@@ -13,7 +13,7 @@ export default function HomeScreen() {
     todo: require("../assets/images/pickballs/todoball.png"),
     number: require("../assets/images/pickballs/numberball.png"),
     binary: require("../assets/images/pickballs/binaryball.png"),
-    manage: require("../assets/images/pickballs/manageball.png"),
+    wheel: require("../assets/images/pickballs/wheelball.png"),
   };
 
   const logo = require("../assets/images/labels/mainlogo.png");
@@ -31,7 +31,7 @@ export default function HomeScreen() {
         </View>
         <View style={styles.row}>
             <PickBall source={balls.binary} onPress={() => router.push('/binary-pick')} />
-            <PickBall source={balls.manage} onPress={() => router.push('/manage')} />
+            <PickBall source={balls.wheel} onPress={() => router.push('/roulette-pick')} />
         </View>
       </View>
       <Text style={styles.footer}>ⓒ 시루네 다락방</Text>

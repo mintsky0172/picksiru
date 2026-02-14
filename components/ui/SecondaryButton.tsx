@@ -7,6 +7,7 @@ type Props = {
   label: string;
   onPress: () => void;
   style?: ViewStyle;
+  disabled?: boolean;
 };
 
 const SecondaryButton = ({ label, onPress, style }: Props) => {

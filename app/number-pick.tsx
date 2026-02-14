@@ -132,7 +132,7 @@ const NumberPickScreen = () => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <Screen style={{ paddingTop: Math.max(0, 60 - insets.top) }}>
+      <Screen style={[styles.container, { paddingTop: Math.max(0, 60 - insets.top) }]}>
         <LoadingOverlay visible={loading} message="시루가 뽑는 중..." />
 
         <View style={styles.header}>
@@ -214,6 +214,9 @@ const NumberPickScreen = () => {
 export default NumberPickScreen;
 
 const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 22,
+  },
   header: { alignItems: "center", marginBottom: 18 },
   title: {
     width: 220,

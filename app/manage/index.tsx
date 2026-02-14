@@ -122,6 +122,7 @@ export default ManageGroupScreen;
 const styles = StyleSheet.create({
   container: {
     paddingBottom: 24,
+    paddingHorizontal: 22,
   },
   header: {
     alignItems: "center",
