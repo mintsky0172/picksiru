@@ -21,6 +21,7 @@ const AddTaskModal = () => {
   const [name, setName] = useState("");
   const proContext = usePickStore((s) => s.proContext);
   const setProContext = usePickStore((s) => s.setProContext);
+  const isPro = usePickStore((s) => s.isPro);
   const close = () => router.back();
 
   const [timeTags, setTimeTags] = useState<TimeTag[]>([]);
@@ -60,48 +61,51 @@ const AddTaskModal = () => {
           value={name}
           onChangeText={setName}
           placeholder="예) 수학 공부 30분, 청소"
+          style={{lineHeight: 0}}
         />
 
-        <View>
-          <Text style={styles.label}>- 태그 추가(선택)</Text>
-          <Text style={styles.bold}>[시간 태그]</Text>
+        {isPro && (
+          <View>
+            <Text style={styles.label}>- 태그 추가(선택)</Text>
+            <Text style={styles.bold}>[시간 태그]</Text>
 
-          <View style={styles.chipRow}>
-            {TIME_OPTIONS.map((o) => (
-              <Chip
-                key={o.value}
-                label={o.label}
-                active={timeTags.includes(o.value)}
-                onPress={() => toggleTime(o.value)}
-              />
-            ))}
+            <View style={styles.chipRow}>
+              {TIME_OPTIONS.map((o) => (
+                <Chip
+                  key={o.value}
+                  label={o.label}
+                  active={timeTags.includes(o.value)}
+                  onPress={() => toggleTime(o.value)}
+                />
+              ))}
+            </View>
+
+            <Text style={styles.bold}>[에너지 태그]</Text>
+
+            <View style={styles.chipRow}>
+              {ENERGY_OPTIONS.map((o) => (
+                <Chip
+                  key={o.value}
+                  label={o.label}
+                  active={energyTags.includes(o.value)}
+                  onPress={() => toggleEnergy(o.value)}
+                />
+              ))}
+            </View>
+
+            <Text style={styles.bold}>[기분 태그]</Text>
+            <View style={styles.chipRow}>
+              {MOOD_OPTIONS.map((o) => (
+                <Chip
+                  key={o.value}
+                  label={o.label}
+                  active={moodTags.includes(o.value)}
+                  onPress={() => toggleMood(o.value)}
+                />
+              ))}
+            </View>
           </View>
-
-          <Text style={styles.bold}>[에너지 태그]</Text>
-
-          <View style={styles.chipRow}>
-            {ENERGY_OPTIONS.map((o) => (
-              <Chip
-                key={o.value}
-                label={o.label}
-                active={energyTags.includes(o.value)}
-                onPress={() => toggleEnergy(o.value)}
-              />
-            ))}
-          </View>
-
-          <Text style={styles.bold}>[기분 태그]</Text>
-          <View style={styles.chipRow}>
-            {MOOD_OPTIONS.map((o) => (
-              <Chip
-                key={o.value}
-                label={o.label}
-                active={moodTags.includes(o.value)}
-                onPress={() => toggleMood(o.value)}
-              />
-            ))}
-          </View>
-        </View>
+        )}
 
         <PrimaryButton
           label="추가"
