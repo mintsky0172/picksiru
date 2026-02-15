@@ -70,7 +70,7 @@ const BinaryPickScreen = () => {
   };
 
   return (
-    <Screen style={[styles.container, { paddingTop: Math.max(0, 60 - insets.top) }]}>
+    <Screen style={ {paddingTop: Math.max(0, 60 - insets.top) }}>
       <LoadingOverlay visible={loading} message="시루가 뽑는 중..." />
 
       <View style={styles.header}>
@@ -135,10 +135,7 @@ const BinaryPickScreen = () => {
 export default BinaryPickScreen;
 
 const styles = StyleSheet.create({
-  container: {
-    paddingBottom: 24,
-    paddingHorizontal: 22,
-  },
+
   header: {
     alignItems: "center",
     marginBottom: 18,

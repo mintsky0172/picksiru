@@ -25,7 +25,7 @@ const EditGroupModal = () => {
     <ModalSheet title="그룹 이름 수정" onClose={close}>
       <View style={styles.body}>
         <Text style={styles.label}>새 그룹 이름</Text>
-        <TextField value={name} onChangeText={setName} placeholder="예: 업무" />
+        <TextField value={name} onChangeText={setName} placeholder="예: 업무" style={{lineHeight: 0}}/>
 
         <PrimaryButton
           label="저장"

@@ -1,3 +1,5 @@
+import { EnergyTag, MoodTag, TimeTag } from "@/lib/pick/pro";
+
 export type Group = {
   id: string;
   name: string;
@@ -9,6 +11,10 @@ export type Task = {
   groupId: string;
   name: string;
   createdAt: number;
+
+  timeTags?: TimeTag[];
+  energyTags?: EnergyTag[];
+  moodTags?: MoodTag[];
 };
 
 export type PickStateData = {

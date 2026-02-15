@@ -13,6 +13,7 @@ import { Colors } from "@/constants/colors";
 import { Typography } from "@/constants/typography";
 import { Spacing } from "@/constants/spacing";
 import ListItem from "@/components/ui/ListItem";
+import ProSetupModal from "@/components/pro/ProSetupModal";
 
 type PickResult = {
   groupName: string;
@@ -32,6 +33,7 @@ const TodoPickScreen = () => {
   const getTasksByGroupId = usePickStore((s) => s.getTasksByGroupId);
   const drawGroupFromDeck = usePickStore((s) => s.drawGroupFromDeck);
   const drawTaskFromDeck = usePickStore((s) => s.drawTaskFromDeck);
+  const pickProTask = usePickStore((s) => s.pickProTask);
 
   const [phase, setPhase] = useState<Phase>("GROUP_SELECT");
   const [selectedGroupId, setSelectedGroupId] = useState<string | "ALL">("ALL");
@@ -39,6 +41,9 @@ const TodoPickScreen = () => {
 
   const [pickedGroupId, setPickedGroupId] = useState<string | null>(null);
   const [pickedTaskId, setPickedTaskId] = useState<string | null>(null);
+
+  const isPro = usePickStore((s) => s.isPro);
+  const [proModalVisible, setProModalVisible] = useState(false);
 
   const pickedGroup = useMemo(
     () => (pickedGroupId ? groups.find((g) => g.id === pickedGroupId) : null),
@@ -101,14 +106,87 @@ const TodoPickScreen = () => {
     setPhase("TASK_RESULT");
   };
 
+  const pickTaskPro = async () => {
+    if (!pickedGroupId) return;
+
+    const candidates = getTasksByGroupId(pickedGroupId);
+    if (candidates.length === 0) {
+      Alert.alert(
+        "할일이 없어",
+        "이 그룹에 할일이 없어. 할일관리에서 추가해줘.",
+      );
+      router.push({
+        pathname: "/manage/[groupId]",
+        params: { groupId: pickedGroupId },
+      });
+      return;
+    }
+
+    setLoading(true);
+    await delay(900 + Math.floor(Math.random() * 500));
+
+    const taskId = pickProTask(pickedGroupId);
+
+    setLoading(false);
+
+    if (!taskId) return;
+    setPickedTaskId(taskId);
+    setPhase("TASK_RESULT");
+  };
+
+  const pickTaskProDirect = async () => {
+    const groupsWithTasks = groups.filter((g) => getTasksByGroupId(g.id).length > 0);
+    if (groupsWithTasks.length === 0) {
+      Alert.alert("할일이 없어", "먼저 할일관리에서 할일을 추가해줘.");
+      router.push("/manage");
+      return;
+    }
+
+    setLoading(true);
+    await delay(900 + Math.floor(Math.random() * 500));
+
+    const group = pickOne(groupsWithTasks);
+    if (!group) {
+      setLoading(false);
+      return;
+    }
+    const taskId = pickProTask(group.id);
+
+    setLoading(false);
+
+    if (!taskId) return;
+    setPickedGroupId(group.id);
+    setPickedTaskId(taskId);
+    setPhase("TASK_RESULT");
+  };
+
+  const onPressPickPro = () => {
+    setProModalVisible(true);
+  };
+
+  const onPressPickNormal = () => {
+    if (!pickedGroupId) {
+      void pickGroup();
+      return;
+    }
+    void pickTask();
+  };
+
   return (
     <Screen
       style={[styles.container, { paddingTop: Math.max(0, 60 - insets.top) }]}
     >
       <LoadingOverlay visible={loading} message="시루가 뽑는 중..." />
+      <ProSetupModal
+        visible={proModalVisible}
+        onClose={() => setProModalVisible(false)}
+        onApply={() => {
+          void pickTaskProDirect();
+        }}
+      />
       {/* 1) 그룹 선택 화면 */}
       {phase === "GROUP_SELECT" && (
-        <View style={styles.page}>
+        <View>
           <View style={styles.header}>
             <Image style={styles.title} source={logo} />
             <Text style={styles.subtitle}>지금 할 건...</Text>
@@ -125,21 +203,43 @@ const TodoPickScreen = () => {
               style={styles.editGroup}
               onPress={() => router.push("/manage")}
             >
-              ⚙️ 그룹 수정
+              📁 그룹 수정
             </Text>
           </View>
 
+         
+         {isPro ? (
+          <>
+          <PrimaryButton
+            label="✨Pro로 뽑기"
+            onPress={onPressPickPro}
+            style={{ marginTop: 18 }}
+           
+          />
+          <SecondaryButton
+            label="일반 모드로 뽑기"
+            onPress={onPressPickNormal}
+            style={{ marginTop: 10 }}
+          />
+          </>
+         ) : (
+          <>
           <PrimaryButton
             label="뽑기!"
-            onPress={pickGroup}
-            style={{ marginTop: 18 }}
+            onPress={onPressPickNormal}
+            style={{ marginTop: 10 }}
           />
+          </>
+         )} 
+          
+
+          
         </View>
       )}
 
       {/* 2) 그룹 결과 화면 */}
       {phase === "GROUP_RESULT" && (
-        <View style={styles.page}>
+        <View>
           <View style={styles.header}>
             <Image style={styles.title} source={logo} />
             <Text style={styles.subtitle}>지금 할 건...</Text>
@@ -170,7 +270,7 @@ const TodoPickScreen = () => {
 
       {/* 3) 할일 선택 화면 */}
       {phase === "TASK_SELECT" && (
-        <View style={styles.page}>
+        <View>
           <View style={styles.header}>
             <Image style={styles.title} source={logo} />
             <Text style={styles.subtitle}>{pickedGroup?.name} 중에서...</Text>
@@ -183,6 +283,7 @@ const TodoPickScreen = () => {
           </View>
 
           <View style={styles.actionsRow}>
+            
             <Text
               style={styles.editGroup}
               onPress={() => {
@@ -197,17 +298,19 @@ const TodoPickScreen = () => {
             </Text>
           </View>
 
+
           <PrimaryButton
             label="뽑기!"
-            onPress={pickTask}
-            style={{ marginTop: 18 }}
-          />
+            onPress={onPressPickNormal}
+            style={{ marginTop: 10 }}
+          />흠음
+
         </View>
       )}
 
       {/* 4) 할일 결과 화면 */}
       {phase === "TASK_RESULT" && (
-        <View style={styles.page}>
+        <View>
           <View style={styles.header}>
             <Image style={styles.title} source={logo} />
             <Text style={styles.subtitle}>{pickedGroup?.name} 중에서...</Text>
@@ -240,7 +343,7 @@ const styles = StyleSheet.create({
   container: {
     paddingBottom: 24,
   },
-  page: { paddingHorizontal: 22 },
+
   header: {
     alignItems: "center",
     marginBottom: 18,
@@ -256,7 +359,13 @@ const styles = StyleSheet.create({
     color: Colors.textPrimary,
     ...Typography.body,
   },
-  actionsRow: { marginTop: 12, alignItems: "flex-end" },
+  actionsRow: {
+    marginTop: 12,
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    gap: 10,
+  },
   editGroup: {
     color: Colors.textSecondary,
     ...Typography.body,

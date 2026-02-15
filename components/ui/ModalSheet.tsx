@@ -2,6 +2,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   View,
@@ -29,7 +30,15 @@ const ModalSheet = ({ title, children, onClose }: Props) => {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={Platform.OS === "ios" ? Spacing.md : 0}
       >
-        <View style={[styles.sheet, { paddingBottom: 24 + insets.bottom }]}>
+        <View
+          style={[
+            styles.sheet,
+            {
+              paddingBottom: 24 + insets.bottom,
+              marginTop: insets.top + 12,
+            },
+          ]}
+        >
           <View style={styles.header}>
             <Text style={styles.title}>{title}</Text>
             <Pressable onPress={onClose} hitSlop={10}>
@@ -37,7 +46,12 @@ const ModalSheet = ({ title, children, onClose }: Props) => {
             </Pressable>
           </View>
 
-          {children}
+          <ScrollView
+            keyboardShouldPersistTaps="handled"
+            showsVerticalScrollIndicator={false}
+          >
+            {children}
+          </ScrollView>
         </View>
       </KeyboardAvoidingView>
     </View>
@@ -57,6 +71,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.overlay,
   },
   sheet: {
+    maxHeight: "86%",
     backgroundColor: Colors.surface,
     borderRadius: 24,
     paddingHorizontal: Spacing.screenHorizontal,

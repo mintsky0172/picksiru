@@ -8,7 +8,7 @@ export const Spacing = {
   xxl: 40,
 
   // 화면 여백
-  screenHorizontal: 22,
+  screenHorizontal: 30,
   screenVertical: 24,
 
   // 컴포넌트 내부
