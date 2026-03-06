@@ -38,8 +38,11 @@ type TaskTags = {
   mood?: MoodTag[];
 };
 
-// Task에 tags가 있다 가정(없으면 통과)
-const getTags = (t: Task): TaskTags | undefined => (t as any).tags;
+const getTags = (t: Task): TaskTags => ({
+  time: t.timeTags,
+  energy: t.energyTags,
+  mood: t.moodTags,
+});
 
 const matchesTag = (arr: string[] | undefined, value: string | undefined) => {
   if (!value) return true;
@@ -58,9 +61,9 @@ export function buildProDeck({
     return tasks.filter((t) => {
       const tags = getTags(t);
       return (
-        matchesTag(tags?.time as any, ctx.time) &&
-        matchesTag(tags?.energy as any, ctx.energy) &&
-        matchesTag(tags?.mood as any, ctx.mood)
+        matchesTag(tags.time, ctx.time) &&
+        matchesTag(tags.energy, ctx.energy) &&
+        matchesTag(tags.mood, ctx.mood)
       );
     });
   };

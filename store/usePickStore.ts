@@ -12,7 +12,6 @@ import {
   EnergyTag,
   MoodTag,
 } from "@/lib/pick/pro";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 const makeId = () =>
   `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;
@@ -22,6 +21,7 @@ type DeckKey = "ALL" | string;
 type PickStore = PickStateData &
   ProState & {
     decks: Record<string, string[]>; // { [key: DeckKey]: taskId[] }
+    proDecks: Record<string, string[]>;
     pro: ProState["pro"];
 
     isPro: boolean;
@@ -118,6 +118,7 @@ export const usePickStore = create<PickStore>()(
     (set, get) => ({
       ...initialData,
       decks: {},
+      proDecks: {},
       groupDeck: [],
 
       pro: {
@@ -138,8 +139,9 @@ export const usePickStore = create<PickStore>()(
       setProContext: (patch) =>
         set((state) => ({
           proContext: { ...state.proContext, ...patch },
+          proDecks: {},
         })),
-      resetProContext: () => set({ proContext: {} }),
+      resetProContext: () => set({ proContext: {}, proDecks: {} }),
 
       setProRules: (groupId: string, rules: Partial<ProRules>) =>
         set((state) => ({
@@ -249,26 +251,33 @@ export const usePickStore = create<PickStore>()(
         const tasksInGroup = state.getTasksByGroupId(groupId);
         if (!tasksInGroup || tasksInGroup.length === 0) return null;
 
-        const context = state.pro.contextByGroupId[groupId] ?? DEFAULT_CONTEXT;
+        const context = state.proContext ?? DEFAULT_CONTEXT;
         const rules = state.pro.rulesByGroupId[groupId] ?? DEFAULT_RULES;
         const recentHistory = state.pro.recentByGroupId[groupId] ?? [];
 
-        // 덱 생성
-        const deck = buildProDeck({
+        const candidateDeck = buildProDeck({
           tasks: tasksInGroup,
           context,
           rules,
           recentHistory,
         });
 
-        if (deck.length === 0) return null;
+        if (candidateDeck.length === 0) return null;
 
-        // pop
-        const pickedId = deck[0]; // 앞에서부터 꺼냄
+        const allowedIds = new Set(candidateDeck);
+        let deck = (state.proDecks[groupId] ?? []).filter((id) =>
+          allowedIds.has(id),
+        );
+
+        if (deck.length === 0) {
+          deck = candidateDeck;
+        }
+
+        const pickedId = deck[0];
         const rest = deck.slice(1);
 
         set((prev) => ({
-          decks: { ...prev.decks, [groupId]: rest },
+          proDecks: { ...prev.proDecks, [groupId]: rest },
           pro: {
             ...prev.pro,
             recentByGroupId: {
@@ -392,11 +401,14 @@ export const usePickStore = create<PickStore>()(
           const nextDecks = { ...state.decks };
           delete nextDecks[groupId];
           delete nextDecks.ALL;
+          const nextProDecks = { ...state.proDecks };
+          delete nextProDecks[groupId];
 
           return {
             groups: state.groups.filter((g) => g.id !== groupId),
             tasks: state.tasks.filter((t) => t.groupId !== groupId),
             decks: nextDecks,
+            proDecks: nextProDecks,
             groupDeck: [],
           };
         });
@@ -421,8 +433,14 @@ export const usePickStore = create<PickStore>()(
           const nextDecks = { ...state.decks };
           delete nextDecks[input.groupId];
           delete nextDecks.ALL;
+          const nextProDecks = { ...state.proDecks };
+          delete nextProDecks[input.groupId];
 
-          return { tasks: [...state.tasks, newTask], decks: nextDecks };
+          return {
+            tasks: [...state.tasks, newTask],
+            decks: nextDecks,
+            proDecks: nextProDecks,
+          };
         });
       },
 
@@ -438,11 +456,25 @@ export const usePickStore = create<PickStore>()(
       },
 
       updateTask: (taskId, patch) => {
-        set((state) => ({
-          tasks: state.tasks.map((t) =>
-            t.id == taskId ? { ...t, ...patch } : t,
-          ),
-        }));
+        set((state) => {
+          const task = state.tasks.find((t) => t.id === taskId);
+          const nextDecks = { ...state.decks };
+          const nextProDecks = { ...state.proDecks };
+
+          if (task?.groupId) {
+            delete nextDecks[task.groupId];
+            delete nextProDecks[task.groupId];
+          }
+          delete nextDecks.ALL;
+
+          return {
+            tasks: state.tasks.map((t) =>
+              t.id == taskId ? { ...t, ...patch } : t,
+            ),
+            decks: nextDecks,
+            proDecks: nextProDecks,
+          };
+        });
       },
 
       deleteTask: (taskId) => {
@@ -453,15 +485,25 @@ export const usePickStore = create<PickStore>()(
           const nextDecks = { ...state.decks };
           if (groupId) delete nextDecks[groupId];
           delete nextDecks.ALL;
+          const nextProDecks = { ...state.proDecks };
+          if (groupId) delete nextProDecks[groupId];
 
           return {
             tasks: state.tasks.filter((t) => t.id !== taskId),
             decks: nextDecks,
+            proDecks: nextProDecks,
           };
         });
       },
 
-      resetAll: () => set(() => ({ ...initialData, decks: {}, groupDeck: [] })),
+      resetAll: () =>
+        set(() => ({
+          ...initialData,
+          decks: {},
+          proDecks: {},
+          groupDeck: [],
+          proContext: {},
+        })),
     }),
     {
       name: "picksiru-store-v1",
