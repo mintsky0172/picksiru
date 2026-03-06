@@ -323,7 +323,7 @@ const TodoPickScreen = () => {
 
           <SecondaryButton
             label="다시 뽑기"
-            onPress={pickTask}
+            onPress={isPro ? pickTaskProDirect : pickTask}
             style={{ marginTop: 16 }}
           />
           <PrimaryButton
