@@ -209,7 +209,7 @@ const RoulettePickScreen = () => {
 
     // 현재 각도에서 이어서 회전
     const start = currentRotation.current;
-    const spins = 4 + Math.random() * 3;
+    const spins = 6 + Math.random() * 3;
     const randomAngle = Math.random() * 360;
 
     const final = start + spins * 360 + randomAngle;
@@ -221,6 +221,9 @@ const RoulettePickScreen = () => {
       useNativeDriver: true,
     }).start(async () => {
       await sleep(120);
+      const normalizedFinal = normalizeDeg(final);
+      rotate.setValue(normalizedFinal);
+      currentRotation.current = normalizedFinal;
       const idx = pickedIndexByRotation(final, n);
       setResult(activeOptions[idx] ?? null);
       setSpinning(false);
@@ -318,9 +321,9 @@ const RoulettePickScreen = () => {
                     style={[styles.pointer, { width: 15, height: 35 }]}
                   />
 
-                  {/* 룰렛(조각+프레임+센터}은 같이 회전 */}
-                  <Animated.View style={{ transform: [{ rotate: spin }] }}>
-                    <View style={{ width: size, height: size }}>
+                  <View style={[styles.wheelBox, { width: size, height: size }]}>
+                    {/* 룰렛(조각+프레임)은 같이 회전 */}
+                    <Animated.View style={{ transform: [{ rotate: spin }] }}>
                       <Svg width={size} height={size}>
                         <G>
                           {n === 0 ? (
@@ -391,13 +394,14 @@ const RoulettePickScreen = () => {
                         source={wheelFrame}
                         style={[styles.abs, { width: size, height: size }]}
                       />
-                      {/* 센터 */}
-                      <Image
-                        source={wheelCenter}
-                        style={[styles.center, { width: 20, height: 20 }]}
-                      />
-                    </View>
-                  </Animated.View>
+                    </Animated.View>
+
+                    {/* 센터는 고정 */}
+                    <Image
+                      source={wheelCenter}
+                      style={[styles.center, { width: 20, height: 20 }]}
+                    />
+                  </View>
                 </View>
 
                 {/* 결과 */}
@@ -461,6 +465,11 @@ const styles = StyleSheet.create({
   wheelArea: {
     marginTop: 8,
     marginBottom: 12,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  wheelBox: {
+    position: "relative",
     alignItems: "center",
     justifyContent: "center",
   },
