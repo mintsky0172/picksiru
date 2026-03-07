@@ -18,7 +18,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from "@/constants/colors";
 import { Typography } from "@/constants/typography";
 import { useRouter } from "expo-router";
-import Svg, { G, Path, Text as SvgText } from "react-native-svg";
+import Svg, { G, Path, TSpan, Text as SvgText } from "react-native-svg";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import SecondaryButton from "@/components/ui/SecondaryButton";
 
@@ -85,6 +85,49 @@ function pickedIndexByRotation(finalDeg: number, n: number) {
   const eps = 1e-6;
   const idx = Math.floor((relative + eps) / seg);
   return Math.max(0, Math.min(n - 1, idx));
+}
+
+function splitLabelIntoLines(label: string, maxCharsPerLine = 7) {
+  const trimmed = label.trim();
+  if (trimmed.length <= maxCharsPerLine) return [trimmed];
+
+  const words = trimmed.split(" ").filter(Boolean);
+  if (words.length === 1) {
+    return [
+      trimmed.slice(0, maxCharsPerLine),
+      trimmed.slice(maxCharsPerLine, maxCharsPerLine * 2),
+    ].filter(Boolean);
+  }
+
+  const lines: string[] = [];
+  let current = "";
+
+  for (const word of words) {
+    const next = current ? `${current} ${word}` : word;
+    if (next.length <= maxCharsPerLine || current.length === 0) {
+      current = next;
+      continue;
+    }
+    lines.push(current);
+    current = word;
+    if (lines.length === 1) break;
+  }
+
+  if (current) lines.push(current);
+
+  if (lines.length === 1 && lines[0].length > maxCharsPerLine) {
+    return [
+      lines[0].slice(0, maxCharsPerLine),
+      lines[0].slice(maxCharsPerLine, maxCharsPerLine * 2),
+    ].filter(Boolean);
+  }
+
+  return lines.slice(0, 2).map((line, index, arr) => {
+    if (index === arr.length - 1 && line.length > maxCharsPerLine) {
+      return `${line.slice(0, maxCharsPerLine - 1)}...`;
+    }
+    return line;
+  });
 }
 
 const RoulettePickScreen = () => {
@@ -304,6 +347,7 @@ const RoulettePickScreen = () => {
                                 sliceRadius * 0.62,
                                 mid,
                               );
+                              const lines = splitLabelIntoLines(label);
 
                               return (
                                 <React.Fragment key={`${label}-${i}`}>
@@ -318,15 +362,22 @@ const RoulettePickScreen = () => {
                                   <SvgText
                                     x={pos.x}
                                     y={pos.y}
-                                    fontSize={Typography.title.fontSize}
+                                    fontSize={20}
                                     fill={Colors.textPrimary}
-                                    fontFamily={Typography.title.fontFamily}
+                                    fontFamily={Typography.subtitle.fontFamily}
                                     textAnchor="middle"
+                                    
                                     alignmentBaseline="middle"
                                   >
-                                    {label.length > 7
-                                      ? `${label.slice(0, 7)}...`
-                                      : label}
+                                    {lines.map((line, lineIndex) => (
+                                      <TSpan
+                                        key={`${label}-${i}-${lineIndex}`}
+                                        x={pos.x}
+                                        dy={lineIndex === 0 ? -10 : 18}
+                                      >
+                                        {line}
+                                      </TSpan>
+                                    ))}
                                   </SvgText>
                                 </React.Fragment>
                               );
