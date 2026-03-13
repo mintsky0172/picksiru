@@ -10,7 +10,10 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.picksiru"
+      "bundleIdentifier": "com.siru.picksiru",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -19,7 +22,7 @@
       },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.anonymous.picksiru"
+      "package": "com.siru.picksiru"
     },
     "web": {
       "bundler": "metro",
@@ -39,6 +42,12 @@
     ],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "bdab31d1-4c3b-4a5f-a676-fe764fa3b39e"
+      }
     }
   }
 }

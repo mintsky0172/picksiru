@@ -57,7 +57,7 @@ export default function HomeScreen() {
       </View>
 
       <View style={styles.footerContainer}>
-        <Text style={styles.footer}>ⓒ 시루네 다락방</Text>
+        <Text style={styles.footer}>ⓒ Somin Lee</Text>
         <View style={styles.proContainer}>
           <Image source={pro} style={styles.proBall} />
           <Text style={styles.proText} onPress={onPressPro}>

@@ -14,6 +14,7 @@ import { Typography } from "@/constants/typography";
 import { Spacing } from "@/constants/spacing";
 import ListItem from "@/components/ui/ListItem";
 import ProSetupModal from "@/components/pro/ProSetupModal";
+import { useProStore } from "@/store/useProStore";
 
 type PickResult = {
   groupName: string;
@@ -42,7 +43,7 @@ const TodoPickScreen = () => {
   const [pickedGroupId, setPickedGroupId] = useState<string | null>(null);
   const [pickedTaskId, setPickedTaskId] = useState<string | null>(null);
 
-  const isPro = usePickStore((s) => s.isPro);
+  const isPro = useProStore((s) => s.isPurchased);
   const [proModalVisible, setProModalVisible] = useState(false);
 
   const pickedGroup = useMemo(
@@ -229,6 +230,12 @@ const TodoPickScreen = () => {
             onPress={onPressPickNormal}
             style={{ marginTop: 10 }}
           />
+            <SecondaryButton
+            label="메인 화면으로"
+            onPress={() => router.push("/")}
+            style={{ marginTop: 10 }}
+          />
+
           </>
          )} 
           
@@ -303,8 +310,8 @@ const TodoPickScreen = () => {
             label="뽑기!"
             onPress={onPressPickNormal}
             style={{ marginTop: 10 }}
-          />흠음
-
+          />
+        
         </View>
       )}
 
