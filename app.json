@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "picksiru",
+    "name": "뽑기시루",
     "slug": "picksiru",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "picksiru",
@@ -38,7 +38,8 @@
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
-      ]
+      ],
+      "expo-iap"
     ],
     "experiments": {
       "typedRoutes": true

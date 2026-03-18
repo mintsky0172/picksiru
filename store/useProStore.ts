@@ -6,6 +6,8 @@ type ProStore = {
   // 실제 구매 여부(추후 IAP 붙이면 true)
   isPurchased: boolean;
   setPurchased: (v: boolean) => void;
+  hasHydrated: boolean;
+  setHasHydrated: (v: boolean) => void;
 
   // 개발용 강제 언락 토글
   devForcePro: boolean;
@@ -20,6 +22,8 @@ export const useProStore = create<ProStore>()(
     (set, get) => ({
       isPurchased: false,
       setPurchased: (v) => set({ isPurchased: v }),
+      hasHydrated: false,
+      setHasHydrated: (v) => set({ hasHydrated: v }),
 
       devForcePro: false,
       setDevForcePro: (v) => set({ devForcePro: v }),
@@ -36,6 +40,9 @@ export const useProStore = create<ProStore>()(
       name: "pro-store",
       storage: createJSONStorage(() => AsyncStorage),
       version: 1,
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      },
     },
   ),
 );

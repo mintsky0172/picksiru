@@ -14,14 +14,13 @@ import {
   TIME_OPTIONS,
 } from "@/components/pro/ProSetupModal";
 import { TimeTag, EnergyTag, MoodTag } from "@/lib/pick/pro";
+import { useProStore } from "@/store/useProStore";
 
 const AddTaskModal = () => {
   const router = useRouter();
   const { groupId } = useLocalSearchParams<{ groupId?: string }>();
   const [name, setName] = useState("");
-  const proContext = usePickStore((s) => s.proContext);
-  const setProContext = usePickStore((s) => s.setProContext);
-  const isPro = usePickStore((s) => s.isPro);
+  const isPro = useProStore((s) => s.isPurchased);
   const close = () => router.back();
 
   const [timeTags, setTimeTags] = useState<TimeTag[]>([]);

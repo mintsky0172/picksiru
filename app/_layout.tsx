@@ -3,47 +3,41 @@ import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { FontFamily } from "@/constants/typography";
-import { Platform } from 'react-native';
-import Purchases, { LOG_LEVEL } from 'react-native-purchases';
 import { useProStore } from "@/store/useProStore";
+import { endConnection, getAvailablePurchases, initConnection } from "expo-iap";
 
 void SplashScreen.preventAutoHideAsync();
 
 export default function Layout() {
   const setPurchased = useProStore((s) => s.setPurchased);
-
-  useEffect(() => {
-    const initRevenueCat = async() => {
-      if(Platform.OS !== 'ios') return;
-      if (__DEV__ && process.env.EXPO_PUBLIC_USE_STOREKIT_LOCAL_TEST === "true") {
-        return;
-      }
-
-      const apiKey = process.env.EXPO_PUBLIC_IOS_API_KEY;
-      if (!apiKey) {
-        console.warn("RevenueCat API key is missing. Skipping initialization.");
-        return;
-      }
-
-      Purchases.setLogLevel(LOG_LEVEL.VERBOSE);
-
-      await Purchases.configure({
-        apiKey
-      });
-
-      const customerInfo = await Purchases.getCustomerInfo();
-      const hasPro = !!customerInfo.entitlements.active['pro'];
-      setPurchased(hasPro);
-    };
-
-    initRevenueCat().catch((e) => {
-      console.error('RevenueCat 초기화 실패:', e);
-    });
-  }, [setPurchased])
+  const hasHydrated = useProStore((s) => s.hasHydrated);
 
   const [fontsLoaded] = useFonts({
     [FontFamily.base]: require("../assets/fonts/Iseoyun.ttf"),
   });
+
+  useEffect(() => {
+    if (!hasHydrated) return;
+
+    const syncPurchasedState = async () => {
+      try {
+        await initConnection();
+        const purchases = await getAvailablePurchases();
+        const hasPro = purchases.some(
+          (purchase) => purchase.productId === "com.siru.picksiru.pro",
+        );
+        setPurchased(hasPro);
+      } catch (error) {
+        console.error("[IAP] startup restore failed", error);
+      }
+    };
+
+    void syncPurchasedState();
+
+    return () => {
+      void endConnection().catch(() => undefined);
+    };
+  }, [hasHydrated, setPurchased]);
 
   useEffect(() => {
     if (fontsLoaded) {

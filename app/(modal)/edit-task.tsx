@@ -15,6 +15,7 @@ import {
   TIME_OPTIONS,
 } from "@/components/pro/ProSetupModal";
 import { TimeTag, EnergyTag, MoodTag } from "@/lib/pick/pro";
+import { useProStore } from "@/store/useProStore";
 
 const EditTaskModal = () => {
   const router = useRouter();
@@ -31,7 +32,7 @@ const EditTaskModal = () => {
   const [energyTags, setEnergyTags] = useState<EnergyTag[]>(task?.energyTags ?? []);
   const [moodTags, setMoodTags] = useState<MoodTag[]>(task?.moodTags ?? []);
 
-  const isPro = usePickStore((s) => s.isPro);
+  const isPro = useProStore((s) => s.isPurchased);
 
   const close = () => router.back();
 
