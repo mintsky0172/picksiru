@@ -7,6 +7,8 @@ import {
   View,
   Image,
   TextInput,
+  Alert,
+  Pressable,
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "expo-router";
@@ -18,6 +20,7 @@ import { Typography } from "@/constants/typography";
 import SecondaryButton from "@/components/ui/SecondaryButton";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import { maybeRequestInAppReview } from "@/lib/review";
+import { usePickStore } from "@/store/usePickStore";
 
 const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 const nextFrame = () =>
@@ -27,6 +30,11 @@ const BinaryPickScreen = () => {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const logo = require("../assets/images/labels/binarylogo.png");
+  const setRecentBinaryChoice = usePickStore(
+    (state) => state.setRecentBinaryChoice,
+  );
+  const recentBinaryChoice = usePickStore((state) => state.recentBinaryChoice);
+  const hasHydrated = usePickStore((state) => state.hasHydrated);
 
   const [optionA, setOptionA] = useState("");
   const [optionB, setOptionB] = useState("");
@@ -66,19 +74,57 @@ const BinaryPickScreen = () => {
     await sleep(900);
 
     const picked = Math.random() < 0.5 ? optionA : optionB;
+
+    setRecentBinaryChoice({
+      optionA: optionA,
+      optionB: optionB,
+      result: picked,
+      savedAt: Date.now(),
+    });
+
     setResult(picked);
     setLoading(false);
     void maybeRequestInAppReview();
   };
 
+  const handleLoadRecentBinaryChoice = () => {
+    if (!recentBinaryChoice) {
+      Alert.alert("최근 기록이 없어요.");
+      return;
+    }
+
+    const hasTyping = optionA.trim() || optionB.trim();
+
+    const applyRecent = () => {
+      setOptionA(recentBinaryChoice.optionA);
+      setOptionB(recentBinaryChoice.optionB);
+    };
+
+    if (hasTyping) {
+      Alert.alert("최근 기록을 불러올까요?", "지금 입력한 내용은 사라져요.", [
+        { text: "취소", style: "cancel" },
+        { text: "불러오기", onPress: applyRecent },
+      ]);
+      return;
+    }
+
+    applyRecent();
+  };
+
   return (
-    <Screen style={ {paddingTop: Math.max(0, 60 - insets.top) }}>
+    <Screen style={{ paddingTop: Math.max(0, 60 - insets.top) }}>
       <LoadingOverlay visible={loading} message="시루가 뽑는 중..." />
 
       <View style={styles.header}>
         <Image style={styles.title} source={logo} />
         <Text style={styles.subtitle}>둘 중에 하나만 골라보자</Text>
       </View>
+
+      {hasHydrated && recentBinaryChoice && (
+        <Pressable onPress={handleLoadRecentBinaryChoice}>
+          <Text style={styles.recentText}>⏱️ 최근 선택지 불러오기</Text> 
+        </Pressable>
+      )}
 
       <View style={styles.inputBox}>
         <TextInput
@@ -137,7 +183,6 @@ const BinaryPickScreen = () => {
 export default BinaryPickScreen;
 
 const styles = StyleSheet.create({
-
   header: {
     alignItems: "center",
     marginBottom: 18,
@@ -201,7 +246,13 @@ const styles = StyleSheet.create({
     ...Typography.title,
     fontSize: 44,
     lineHeight: 52,
-    textAlign: 'center'
+    textAlign: "center",
   },
   bottom: { paddingBottom: 18 },
+  recentText: {
+    color: Colors.textSecondary,
+    ...Typography.body,
+    textAlign: 'center',
+    marginBottom: 12,
+  }
 });

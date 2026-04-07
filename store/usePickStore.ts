@@ -18,6 +18,19 @@ const makeId = () =>
 
 type DeckKey = "ALL" | string;
 
+type RecentBinaryChoice = {
+  optionA: string;
+  optionB: string;
+  result: string;
+  savedAt: number;
+} | null;
+
+type RecentRoulette = {
+  options: string[];
+  result: string;
+  savedAt: number;
+} | null;
+
 type PickStore = PickStateData &
   ProState & {
     decks: Record<string, string[]>; // { [key: DeckKey]: taskId[] }
@@ -57,6 +70,18 @@ type PickStore = PickStateData &
     resetDeck: (key?: DeckKey) => void;
 
     resetAll: () => void;
+
+    recentBinaryChoice: RecentBinaryChoice;
+    recentRoulette: RecentRoulette;
+
+    setRecentBinaryChoice: (payload: NonNullable<RecentBinaryChoice>) => void;
+    setRecentRoulette: (payload: NonNullable<RecentRoulette>) => void;
+
+    clearRecentBinaryChoice: () => void;
+    clearRecentRoulette: () => void;
+
+    hasHydrated: boolean;
+    setHasHydrated: (value: boolean) => void;
   };
 
 type AddTaskInput = {
@@ -238,6 +263,24 @@ export const usePickStore = create<PickStore>()(
             },
           };
         }),
+
+      recentBinaryChoice: null,
+      recentRoulette: null,
+
+      setRecentBinaryChoice: (payload) =>
+        set({ recentBinaryChoice: payload }),
+
+      setRecentRoulette: (payload) =>
+        set({ recentRoulette: payload }),
+
+      clearRecentBinaryChoice: () =>
+        set({ recentBinaryChoice: null }),
+
+      clearRecentRoulette: () => 
+        set({ recentRoulette: null }),
+
+      hasHydrated: false,
+      setHasHydrated: (value) => set({ hasHydrated: value }),
 
       /**
        * Pro 전용 뽑기:
@@ -516,7 +559,14 @@ export const usePickStore = create<PickStore>()(
         tasks: state.tasks,
         isPro: state.isPro,
         proContext: state.proContext,
+        recentBinaryChoice: state.recentBinaryChoice,
+        recentRoulette: state.recentRoulette,
       }),
+
+      onRehydrateStorage: () => (state) => {
+        state?.setHasHydrated(true);
+      }
+
     },
   ),
 );

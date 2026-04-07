@@ -6,6 +6,7 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Platform,
+  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -22,6 +23,7 @@ import Svg, { G, Path, TSpan, Text as SvgText } from "react-native-svg";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import SecondaryButton from "@/components/ui/SecondaryButton";
 import { maybeRequestInAppReview } from "@/lib/review";
+import { usePickStore } from "@/store/usePickStore";
 
 const MAX = 8;
 
@@ -153,6 +155,10 @@ const RoulettePickScreen = () => {
   const [phase, setPhase] = useState<Phase>("INPUT");
   const [sliceColors, setSliceColors] = useState<string[]>([]);
 
+  const recentRoulette = usePickStore((state) => state.recentRoulette);
+  const setRecentRoulette = usePickStore((state) => state.setRecentRoulette);
+  const hasHydrated = usePickStore((state) => state.hasHydrated);
+
   // 회전 애니메이션
   const rotate = useRef(new Animated.Value(0)).current;
   const currentRotation = useRef(0);
@@ -227,6 +233,12 @@ const RoulettePickScreen = () => {
       currentRotation.current = normalizedFinal;
       const idx = pickedIndexByRotation(final, n);
       const picked = activeOptions[idx] ?? null;
+
+      setRecentRoulette({
+        options: activeOptions,
+        result: picked,
+        savedAt: Date.now(),
+      });
       setResult(picked);
       setSpinning(false);
       setPhase("RESULT");
@@ -256,6 +268,28 @@ const RoulettePickScreen = () => {
     setPhase("INPUT");
   };
 
+  const handleLoadRecentRoulette = () => {
+    if (!recentRoulette) {
+      Alert.alert("최근 기록이 없어요.");
+      return;
+    }
+
+    const hasTyping = options.some((item) => item.trim());
+
+    const applyRecent = () => {
+      setOptions(recentRoulette.options);
+    };
+
+    if (hasTyping) {
+      Alert.alert("최근 선택지를 불러올까요?", "지금 입력한 내용은 사라져요.", [
+        { text: "취소", style: "cancel" },
+        { text: "불러오기", onPress: applyRecent },
+      ]);
+      return;
+    }
+    applyRecent();
+  };
+
   return (
     <Screen
       style={[styles.screen, { paddingTop: Math.max(0, 60 - insets.top) }]}
@@ -277,6 +311,13 @@ const RoulettePickScreen = () => {
               <>
                 {/* 입력 UI */}
                 <View style={styles.inputs}>
+                  {hasHydrated && recentRoulette && (
+                    <Pressable onPress={handleLoadRecentRoulette}>
+                      <Text style={styles.recentText}>
+                        ⏱️ 최근 선택지 불러오기
+                      </Text>
+                    </Pressable>
+                  )}
                   {Array.from({ length: MAX }).map((_, i) => (
                     <View key={i} style={styles.row}>
                       <Text style={styles.index}>{i + 1}</Text>
@@ -326,7 +367,9 @@ const RoulettePickScreen = () => {
                     style={[styles.pointer, { width: 15, height: 35 }]}
                   />
 
-                  <View style={[styles.wheelBox, { width: size, height: size }]}>
+                  <View
+                    style={[styles.wheelBox, { width: size, height: size }]}
+                  >
                     {/* 룰렛(조각+프레임)은 같이 회전 */}
                     <Animated.View style={{ transform: [{ rotate: spin }] }}>
                       <Svg width={size} height={size}>
@@ -374,7 +417,6 @@ const RoulettePickScreen = () => {
                                     fill={Colors.textPrimary}
                                     fontFamily={Typography.subtitle.fontFamily}
                                     textAnchor="middle"
-                                    
                                     alignmentBaseline="middle"
                                   >
                                     {lines.map((line, lineIndex) => (
@@ -534,4 +576,10 @@ const styles = StyleSheet.create({
     paddingBottom: 18,
     width: "100%",
   },
+  recentText: {
+    color: Colors.textSecondary,
+    ...Typography.body,
+    textAlign: 'center',
+    marginBottom: 12,
+  }
 });
