@@ -19,6 +19,7 @@ import SecondaryButton from "@/components/ui/SecondaryButton";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Colors } from "@/constants/colors";
 import { Typography } from "@/constants/typography";
+import { maybeRequestInAppReview } from "@/lib/review";
 
 const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 const nextFrame = () =>
@@ -122,6 +123,7 @@ const NumberPickScreen = () => {
     const n = pickIntInclusive(ok.min, ok.max);
     setResult(n);
     setLoading(false);
+    void maybeRequestInAppReview();
   };
 
   const onReset = () => {

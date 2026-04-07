@@ -15,6 +15,7 @@ import { Spacing } from "@/constants/spacing";
 import ListItem from "@/components/ui/ListItem";
 import ProSetupModal from "@/components/pro/ProSetupModal";
 import { useProStore } from "@/store/useProStore";
+import { maybeRequestInAppReview } from "@/lib/review";
 
 type PickResult = {
   groupName: string;
@@ -105,6 +106,7 @@ const TodoPickScreen = () => {
     if (!task) return;
     setPickedTaskId(task.id);
     setPhase("TASK_RESULT");
+    void maybeRequestInAppReview();
   };
 
   const pickTaskPro = async () => {
@@ -133,6 +135,7 @@ const TodoPickScreen = () => {
     if (!taskId) return;
     setPickedTaskId(taskId);
     setPhase("TASK_RESULT");
+    void maybeRequestInAppReview();
   };
 
   const pickTaskProDirect = async () => {
@@ -159,6 +162,7 @@ const TodoPickScreen = () => {
     setPickedGroupId(group.id);
     setPickedTaskId(taskId);
     setPhase("TASK_RESULT");
+    void maybeRequestInAppReview();
   };
 
   const onPressPickPro = () => {

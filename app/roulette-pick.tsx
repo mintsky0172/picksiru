@@ -21,6 +21,7 @@ import { useRouter } from "expo-router";
 import Svg, { G, Path, TSpan, Text as SvgText } from "react-native-svg";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import SecondaryButton from "@/components/ui/SecondaryButton";
+import { maybeRequestInAppReview } from "@/lib/review";
 
 const MAX = 8;
 
@@ -225,9 +226,13 @@ const RoulettePickScreen = () => {
       rotate.setValue(normalizedFinal);
       currentRotation.current = normalizedFinal;
       const idx = pickedIndexByRotation(final, n);
-      setResult(activeOptions[idx] ?? null);
+      const picked = activeOptions[idx] ?? null;
+      setResult(picked);
       setSpinning(false);
       setPhase("RESULT");
+      if (picked) {
+        void maybeRequestInAppReview();
+      }
     });
   };
 

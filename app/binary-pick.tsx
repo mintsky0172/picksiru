@@ -17,6 +17,7 @@ import { Colors } from "@/constants/colors";
 import { Typography } from "@/constants/typography";
 import SecondaryButton from "@/components/ui/SecondaryButton";
 import PrimaryButton from "@/components/ui/PrimaryButton";
+import { maybeRequestInAppReview } from "@/lib/review";
 
 const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 const nextFrame = () =>
@@ -67,6 +68,7 @@ const BinaryPickScreen = () => {
     const picked = Math.random() < 0.5 ? optionA : optionB;
     setResult(picked);
     setLoading(false);
+    void maybeRequestInAppReview();
   };
 
   return (
