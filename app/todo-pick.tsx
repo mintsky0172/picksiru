@@ -232,7 +232,7 @@ const TodoPickScreen = () => {
           />
             <SecondaryButton
             label="메인 화면으로"
-            onPress={() => router.push("/")}
+            onPress={() => router.replace("/")}
             style={{ marginTop: 10 }}
           />
 
@@ -269,7 +269,7 @@ const TodoPickScreen = () => {
           />
           <SecondaryButton
             label="메인 화면으로"
-            onPress={() => router.push("/")}
+            onPress={() => router.replace("/")}
             style={{ marginTop: 10 }}
           />
         </View>
@@ -335,7 +335,7 @@ const TodoPickScreen = () => {
           />
           <PrimaryButton
             label="메인 화면으로"
-            onPress={() => router.push("/")}
+            onPress={() => router.replace("/")}
             style={{ marginTop: 10 }}
           />
         </View>

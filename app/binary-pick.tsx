@@ -125,7 +125,7 @@ const BinaryPickScreen = () => {
         <View style={{ height: 10 }} />
         <SecondaryButton
           label="메인 화면으로"
-          onPress={() => router.push("/")}
+          onPress={() => router.replace("/")}
         />
       </View>
     </Screen>
@@ -199,6 +199,7 @@ const styles = StyleSheet.create({
     ...Typography.title,
     fontSize: 44,
     lineHeight: 52,
+    textAlign: 'center'
   },
   bottom: { paddingBottom: 18 },
 });

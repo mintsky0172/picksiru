@@ -305,7 +305,7 @@ const RoulettePickScreen = () => {
                   <View style={{ height: 10 }} />
                   <SecondaryButton
                     label="메인 화면으로"
-                    onPress={() => router.push("/")}
+                    onPress={() => router.replace("/")}
                   />
                 </View>
               </>
@@ -430,7 +430,7 @@ const RoulettePickScreen = () => {
                   <View style={{ height: 10 }} />
                   <SecondaryButton
                     label="메인 화면으로"
-                    onPress={() => router.push("/")}
+                    onPress={() => router.replace("/")}
                   />
                 </View>
               </>

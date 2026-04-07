@@ -82,7 +82,7 @@ const ManageGroupScreen = () => {
         />
         <SecondaryButton
           label="메인 화면으로"
-          onPress={() => router.push("/")}
+          onPress={() => router.replace("/")}
         />
         <Pressable
           onPress={() => {

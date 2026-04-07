@@ -192,7 +192,7 @@ const ProIntroScreen = () => {
             <PrimaryButton label="구매 완료" disabled onPress={() => {}} />
             <SecondaryButton
               label="Pro 사용하러 가기"
-              onPress={() => router.push("/")}
+              onPress={() => router.replace("/")}
             />
           </View>
           <View style={{ height: 15 }} />

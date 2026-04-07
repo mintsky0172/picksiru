@@ -27,6 +27,7 @@ const ModalSheet = ({ title, children, onClose }: Props) => {
       <Pressable style={styles.backdrop} onPress={onClose} />
 
       <KeyboardAvoidingView
+        style={styles.sheetWrap}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={Platform.OS === "ios" ? Spacing.md : 0}
       >
@@ -63,12 +64,15 @@ export default ModalSheet;
 const styles = StyleSheet.create({
   screen: {
     flex: 1,
-    justifyContent: "flex-end",
     backgroundColor: "transparent",
-  }, 
+  },
   backdrop: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: Colors.overlay,
+  },
+  sheetWrap: {
+    flex: 1,
+    justifyContent: "flex-end",
   },
   sheet: {
     maxHeight: "86%",
