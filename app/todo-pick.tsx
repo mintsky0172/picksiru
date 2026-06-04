@@ -139,7 +139,9 @@ const TodoPickScreen = () => {
   };
 
   const pickTaskProDirect = async () => {
-    const groupsWithTasks = groups.filter((g) => getTasksByGroupId(g.id).length > 0);
+    const groupsWithTasks = groups.filter(
+      (g) => getTasksByGroupId(g.id).length > 0,
+    );
     if (groupsWithTasks.length === 0) {
       Alert.alert("할일이 없어", "먼저 할일관리에서 할일을 추가해줘.");
       router.push("/manage");
@@ -212,39 +214,33 @@ const TodoPickScreen = () => {
             </Text>
           </View>
 
-         
-         {isPro ? (
-          <>
-          <PrimaryButton
-            label="✨Pro로 뽑기"
-            onPress={onPressPickPro}
-            style={{ marginTop: 18 }}
-           
-          />
-          <SecondaryButton
-            label="일반 모드로 뽑기"
-            onPress={onPressPickNormal}
-            style={{ marginTop: 10 }}
-          />
-          </>
-         ) : (
-          <>
-          <PrimaryButton
-            label="뽑기!"
-            onPress={onPressPickNormal}
-            style={{ marginTop: 10 }}
-          />
-            <SecondaryButton
-            label="메인 화면으로"
-            onPress={() => router.replace("/")}
-            style={{ marginTop: 10 }}
-          />
-
-          </>
-         )} 
-          
-
-          
+          {isPro ? (
+            <>
+              <PrimaryButton
+                label="✨Pro로 뽑기"
+                onPress={onPressPickPro}
+                style={{ marginTop: 18 }}
+              />
+              <SecondaryButton
+                label="일반 모드로 뽑기"
+                onPress={onPressPickNormal}
+                style={{ marginTop: 10 }}
+              />
+            </>
+          ) : (
+            <>
+              <PrimaryButton
+                label="뽑기!"
+                onPress={onPressPickNormal}
+                style={{ marginTop: 10 }}
+              />
+              <SecondaryButton
+                label="메인 화면으로"
+                onPress={() => router.replace("/")}
+                style={{ marginTop: 10 }}
+              />
+            </>
+          )}
         </View>
       )}
 
@@ -294,7 +290,6 @@ const TodoPickScreen = () => {
           </View>
 
           <View style={styles.actionsRow}>
-            
             <Text
               style={styles.editGroup}
               onPress={() => {
@@ -309,13 +304,11 @@ const TodoPickScreen = () => {
             </Text>
           </View>
 
-
           <PrimaryButton
             label="뽑기!"
             onPress={onPressPickNormal}
             style={{ marginTop: 10 }}
           />
-        
         </View>
       )}
 
@@ -334,7 +327,7 @@ const TodoPickScreen = () => {
 
           <SecondaryButton
             label="다시 뽑기"
-            onPress={isPro ? pickTaskProDirect : pickTask}
+            onPress={isPro ? pickTaskPro : pickTask}
             style={{ marginTop: 16 }}
           />
           <PrimaryButton
