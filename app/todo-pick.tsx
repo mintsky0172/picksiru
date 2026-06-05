@@ -23,6 +23,7 @@ type PickResult = {
 };
 
 type Phase = "GROUP_SELECT" | "GROUP_RESULT" | "TASK_SELECT" | "TASK_RESULT";
+type TaskPickMode = "NORMAL" | "PRO_DIRECT";
 
 const TodoPickScreen = () => {
   const logo = require("../assets/images/labels/todologo.png");
@@ -40,6 +41,7 @@ const TodoPickScreen = () => {
   const [phase, setPhase] = useState<Phase>("GROUP_SELECT");
   const [selectedGroupId, setSelectedGroupId] = useState<string | "ALL">("ALL");
   const [loading, setLoading] = useState(false);
+  const [taskPickMode, setTaskPickMode] = useState<TaskPickMode>("NORMAL");
 
   const [pickedGroupId, setPickedGroupId] = useState<string | null>(null);
   const [pickedTaskId, setPickedTaskId] = useState<string | null>(null);
@@ -105,35 +107,7 @@ const TodoPickScreen = () => {
 
     if (!task) return;
     setPickedTaskId(task.id);
-    setPhase("TASK_RESULT");
-    void maybeRequestInAppReview();
-  };
-
-  const pickTaskPro = async () => {
-    if (!pickedGroupId) return;
-
-    const candidates = getTasksByGroupId(pickedGroupId);
-    if (candidates.length === 0) {
-      Alert.alert(
-        "할일이 없어",
-        "이 그룹에 할일이 없어. 할일관리에서 추가해줘.",
-      );
-      router.push({
-        pathname: "/manage/[groupId]",
-        params: { groupId: pickedGroupId },
-      });
-      return;
-    }
-
-    setLoading(true);
-    await delay(900 + Math.floor(Math.random() * 500));
-
-    const taskId = pickProTask(pickedGroupId);
-
-    setLoading(false);
-
-    if (!taskId) return;
-    setPickedTaskId(taskId);
+    setTaskPickMode("NORMAL");
     setPhase("TASK_RESULT");
     void maybeRequestInAppReview();
   };
@@ -163,6 +137,7 @@ const TodoPickScreen = () => {
     if (!taskId) return;
     setPickedGroupId(group.id);
     setPickedTaskId(taskId);
+    setTaskPickMode("PRO_DIRECT");
     setPhase("TASK_RESULT");
     void maybeRequestInAppReview();
   };
@@ -327,7 +302,9 @@ const TodoPickScreen = () => {
 
           <SecondaryButton
             label="다시 뽑기"
-            onPress={isPro ? pickTaskPro : pickTask}
+            onPress={
+              taskPickMode === "PRO_DIRECT" ? pickTaskProDirect : pickTask
+            }
             style={{ marginTop: 16 }}
           />
           <PrimaryButton
